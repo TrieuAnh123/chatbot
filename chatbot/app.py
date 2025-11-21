@@ -88,32 +88,53 @@ with col2:
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    # Khung chat chính với border
-    st.markdown('<div class="main-chat-container">', unsafe_allow_html=True)
-    
-    # Hiển thị nội dung chat trong khung
-    if not st.session_state.chat_history:
-        st.markdown('<div class="empty-chat">💡 Hãy bắt đầu trò chuyện bằng cách nhập câu hỏi bên dưới!</div>', unsafe_allow_html=True)
-    else:
-        for chat in st.session_state.chat_history:
-            if chat["role"] == "user":
-                st.markdown(f'''
-                <div class="user-message">
-                    <div class="message-sender">👤 Quý khách</div>
-                    {chat['content']}
-                </div>
-                ''', unsafe_allow_html=True)
-            else:
-                st.markdown(f'''
-                <div class="bot-message">
-                    <div class="message-sender">🤖 Trợ lý AI</div>
-                    {chat['content']}
-                </div>
-                ''', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    # Tạo container chuẩn cho khung chat
+    chat_box = st.container()
 
-    # --- Form nhập tin nhắn  ---
+    # CSS áp dụng lên container thật
+    st.markdown("""
+    <style>
+        div[data-testid="stVerticalBlock"] > div:has(div.main-chat-box) {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            height: 420px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #fafafa;
+            margin-bottom: 10px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Hiển thị chat trong container
+    with chat_box:
+        st.markdown("<div class='main-chat-box'>", unsafe_allow_html=True)
+
+        if not st.session_state.chat_history:
+            st.markdown(
+                '<div class="empty-chat">💡 Hãy bắt đầu trò chuyện bằng cách nhập tin ở bên dưới!</div>',
+                unsafe_allow_html=True
+            )
+        else:
+            for chat in st.session_state.chat_history:
+                if chat["role"] == "user":
+                    st.markdown(f"""
+                    <div class="user-message">
+                        <div class="message-sender">👤 Quý khách</div>
+                        {chat['content']}
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div class="bot-message">
+                        <div class="message-sender">🤖 Trợ lý AI</div>
+                        {chat['content']}
+                    </div>
+                    """, unsafe_allow_html=True)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # --- Form nhập tin nhắn tách riêng dưới khung chat ---
     with st.form("chat_form", clear_on_submit=True):
         user_input = st.text_input("Nhập tin nhắn của bạn:")
         send = st.form_submit_button("📨 Gửi")
@@ -125,7 +146,6 @@ with col2:
         st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
 
         st.rerun()
-
 # --- Cột 3: Form tạo đơn hàng ---
 with col3:
     st.subheader("🧾 Tạo đơn hàng nhanh (tùy chọn)")
