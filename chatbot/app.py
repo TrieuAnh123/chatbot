@@ -10,52 +10,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- CSS tùy chỉnh để cải thiện giao diện chat ---
-st.markdown("""
-<style>
-    .main-chat-container {
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        background-color: white;
-        height: 400px;
-        overflow-y: auto;
-        padding: 15px;
-        margin-bottom: 15px;
-        background-color: #fafafa;
-    }
-    .user-message {
-        background-color: #e3f2fd;
-        padding: 10px 15px;
-        border-radius: 15px 15px 0 15px;
-        margin: 8px 0;
-        max-width: 80%;
-        margin-left: auto;
-        border: 1px solid #bbdefb;
-    }
-    .bot-message {
-        background-color: #f5f5f5;
-        padding: 10px 15px;
-        border-radius: 15px 15px 15px 0;
-        margin: 8px 0;
-        max-width: 80%;
-        margin-right: auto;
-        border: 1px solid #e0e0e0;
-    }
-    .message-sender {
-        font-weight: bold;
-        font-size: 0.85em;
-        margin-bottom: 3px;
-        color: #555;
-    }
-    .empty-chat {
-        text-align: center;
-        color: #777;
-        padding: 50px 0;
-        font-style: italic;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # --- Tiêu đề ---
 st.title("💬 Chatbot CSKH - BHLĐ Triệu Gia")
 st.markdown("🌸 Hỗ trợ tư vấn sản phẩm và tạo đơn hàng tự động cho khách hàng **Triệu Gia**.")
@@ -84,88 +38,36 @@ with col1:
 with col2:
     st.subheader("💬 Trò chuyện cùng trợ lý AI CSKH:")
 
+    # Lưu lịch sử hội thoại
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    # CSS style cho container thật
-    st.markdown("""
-    <style>
-        .chat-container {
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            height: 430px;
-            padding: 12px;
-            overflow-y: auto;
-            background-color: #fafafa;
-        }
+    chat_container = st.container(height=400, border=True)
 
-        .user-message {
-            background: #e3f2fd;
-            padding: 10px 14px;
-            margin: 8px 0;
-            border-radius: 15px 15px 0 15px;
-            max-width: 80%;
-            margin-left: auto;
-            border: 1px solid #bbdefb;
-        }
-
-        .bot-message {
-            background: #f5f5f5;
-            padding: 10px 14px;
-            margin: 8px 0;
-            border-radius: 15px 15px 15px 0;
-            max-width: 80%;
-            margin-right: auto;
-            border: 1px solid #e0e0e0;
-        }
-
-        .message-sender {
-            font-weight: bold;
-            font-size: 0.85em;
-            margin-bottom: 2px;
-            color: #555;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-    # Đây là container thật
-    chat_box = st.container()
-
-    with chat_box:
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
+    # Hiển thị nội dung chat trong khung
+    with chat_container:
         if not st.session_state.chat_history:
-            st.markdown(
-                '<div style="text-align:center;color:#777;padding-top:120px;">💡 Bắt đầu trò chuyện bằng cách nhập tin nhắn bên dưới!</div>',
-                unsafe_allow_html=True
-            )
+            st.info("💡 Hãy bắt đầu trò chuyện bằng cách nhập câu hỏi bên dưới!")
         else:
-            for msg in st.session_state.chat_history:
-                if msg["role"] == "user":
-                    st.markdown(
-                        f'<div class="user-message"><div class="message-sender">👤 Quý khách</div>{msg["content"]}</div>',
-                        unsafe_allow_html=True
-                    )
+            for chat in st.session_state.chat_history:
+                if chat["role"] == "user":
+                    st.markdown(f"👤 **Quý khách:** {chat['content']}")
                 else:
-                    st.markdown(
-                        f'<div class="bot-message"><div class="message-sender">🤖 Trợ lý AI</div>{msg["content"]}</div>',
-                        unsafe_allow_html=True
-                    )
+                    st.markdown(f"🤖 **Tôi:** {chat['content']}")
 
-        st.markdown("</div>", unsafe_allow_html=True)
+   # --- Form nhập tin nhắn  ---
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("Nhập tin nhắn của bạn:")
+    send = st.form_submit_button("📨 Gửi")
 
-    # Form nhập tin nhắn
-    with st.form("chat_form", clear_on_submit=True):
-        user_input = st.text_input("Nhập tin nhắn của bạn:")
-        send = st.form_submit_button("📨 Gửi")
+if send and user_input.strip():
+    st.session_state.chat_history.append({"role": "user", "content": user_input})
 
-    if send and user_input.strip():
-        st.session_state.chat_history.append({"role": "user", "content": user_input})
-        bot_reply = generate_ai_response(user_input, st.session_state.chat_history)
-        st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
-        st.rerun()
+    bot_reply = generate_ai_response(user_input, st.session_state.chat_history)
+    st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
 
-        
+    st.rerun()
+
 # --- Cột 3: Form tạo đơn hàng ---
 with col3:
     st.subheader("🧾 Tạo đơn hàng nhanh (tùy chọn)")
