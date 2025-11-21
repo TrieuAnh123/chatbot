@@ -13,14 +13,15 @@ st.set_page_config(
 # --- CSS tùy chỉnh để cải thiện giao diện chat ---
 st.markdown("""
 <style>
-    .chat-container {
-        border: 1px solid #e0e0e0;
+    .main-chat-container {
+        border: 2px solid #e0e0e0;
         border-radius: 10px;
-        padding: 15px;
-        background-color: #fafafa;
+        background-color: white;
         height: 400px;
         overflow-y: auto;
+        padding: 15px;
         margin-bottom: 15px;
+        background-color: #fafafa;
     }
     .user-message {
         background-color: #e3f2fd;
@@ -66,7 +67,7 @@ col1, col2, col3 = st.columns([1.2, 2, 1.2])
 with col1:
     st.subheader("📦 Danh mục sản phẩm")
 
-    if st.button("📂 Xem danh mục sản phẩm", use_container_width=True):
+    if st.button("📂 Xem danh mục sản phẩm"):
         product_path = os.path.join("data", "products.csv")
 
         if os.path.exists(product_path):
@@ -81,15 +82,16 @@ with col1:
 
 # --- Cột 2: Khu vực trò chuyện ---
 with col2:
-    st.subheader("💬 Trò chuyện cùng trợ lý AI CSKH")
+    st.subheader("💬 Trò chuyện cùng trợ lý AI CSKH:")
 
     # Lưu lịch sử hội thoại
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    # Khung chat được cải thiện
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    # Khung chat chính với border
+    st.markdown('<div class="main-chat-container">', unsafe_allow_html=True)
     
+    # Hiển thị nội dung chat trong khung
     if not st.session_state.chat_history:
         st.markdown('<div class="empty-chat">💡 Hãy bắt đầu trò chuyện bằng cách nhập câu hỏi bên dưới!</div>', unsafe_allow_html=True)
     else:
@@ -111,10 +113,10 @@ with col2:
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Form nhập tin nhắn ---
+    # --- Form nhập tin nhắn  ---
     with st.form("chat_form", clear_on_submit=True):
-        user_input = st.text_input("Nhập tin nhắn của bạn:", placeholder="Xin chào, tôi cần tư vấn...")
-        send = st.form_submit_button("📨 Gửi tin nhắn", use_container_width=True)
+        user_input = st.text_input("Nhập tin nhắn của bạn:")
+        send = st.form_submit_button("📨 Gửi")
 
     if send and user_input.strip():
         st.session_state.chat_history.append({"role": "user", "content": user_input})
@@ -126,21 +128,20 @@ with col2:
 
 # --- Cột 3: Form tạo đơn hàng ---
 with col3:
-    st.subheader("🧾 Tạo đơn hàng nhanh")
-    
-    with st.container(border=True):
-        with st.form("order_form"):
-            customer_name = st.text_input("Tên khách hàng")
-            address = st.text_input("Địa chỉ giao hàng")
-            phone = st.text_input("Số điện thoại")
-            product_name = st.text_input("Tên sản phẩm")
-            quantity = st.number_input("Số lượng", min_value=1, step=1)
+    st.subheader("🧾 Tạo đơn hàng nhanh (tùy chọn)")
 
-            submit = st.form_submit_button("✅ Tạo đơn hàng", use_container_width=True)
+    with st.form("order_form"):
+        customer_name = st.text_input("Tên khách hàng")
+        address = st.text_input("Địa chỉ giao hàng")
+        phone = st.text_input("Số điện thoại")
+        product_name = st.text_input("Tên sản phẩm")
+        quantity = st.number_input("Số lượng", min_value=1, step=1)
 
-            if submit:
-                if not all([customer_name, address, phone, product_name]):
-                    st.warning("⚠️ Vui lòng nhập đầy đủ thông tin trước khi tạo đơn hàng.")
-                else:
-                    create_order(customer_name, address, phone, product_name, quantity)
-                    st.success(f"✅ Đã tạo đơn hàng cho {customer_name} ({product_name} x {quantity}).")
+        submit = st.form_submit_button("Tạo đơn hàng")
+
+        if submit:
+            if not all([customer_name, address, phone, product_name]):
+                st.warning("⚠️ Vui lòng nhập đầy đủ thông tin trước khi tạo đơn hàng.")
+            else:
+                create_order(customer_name, address, phone, product_name, quantity)
+                st.success(f"✅ Đã tạo đơn hàng cho {customer_name} ({product_name} x {quantity}).")
