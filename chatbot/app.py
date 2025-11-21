@@ -84,35 +84,33 @@ with col1:
 with col2:
     st.subheader("💬 Trò chuyện cùng trợ lý AI CSKH:")
 
-    # Lưu lịch sử hội thoại
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    # Tạo container chuẩn cho khung chat
-    chat_box = st.container()
+    # Container thật của Streamlit
+    chat_container = st.container()
 
-    # CSS áp dụng lên container thật
+    # CSS styling cho container
     st.markdown("""
     <style>
-        div[data-testid="stVerticalBlock"] > div:has(div.main-chat-box) {
+        .chat-box {
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             height: 420px;
-            overflow-y: auto;
             padding: 15px;
+            overflow-y: scroll;
             background-color: #fafafa;
-            margin-bottom: 10px;
         }
     </style>
     """, unsafe_allow_html=True)
 
-    # Hiển thị chat trong container
-    with chat_box:
-        st.markdown("<div class='main-chat-box'>", unsafe_allow_html=True)
+    # Render khung và nội dung chat
+    with chat_container:
+        st.markdown('<div class="chat-box">', unsafe_allow_html=True)
 
         if not st.session_state.chat_history:
             st.markdown(
-                '<div class="empty-chat">💡 Hãy bắt đầu trò chuyện bằng cách nhập tin ở bên dưới!</div>',
+                '<div class="empty-chat">💡 Hãy bắt đầu trò chuyện bằng cách nhập tin nhắn bên dưới!</div>',
                 unsafe_allow_html=True
             )
         else:
@@ -132,20 +130,19 @@ with col2:
                     </div>
                     """, unsafe_allow_html=True)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- Form nhập tin nhắn tách riêng dưới khung chat ---
+    # Form nhập tin nhắn
     with st.form("chat_form", clear_on_submit=True):
         user_input = st.text_input("Nhập tin nhắn của bạn:")
         send = st.form_submit_button("📨 Gửi")
 
     if send and user_input.strip():
         st.session_state.chat_history.append({"role": "user", "content": user_input})
-
         bot_reply = generate_ai_response(user_input, st.session_state.chat_history)
         st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
-
         st.rerun()
+        
 # --- Cột 3: Form tạo đơn hàng ---
 with col3:
     st.subheader("🧾 Tạo đơn hàng nhanh (tùy chọn)")
