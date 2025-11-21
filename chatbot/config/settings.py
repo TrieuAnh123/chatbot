@@ -3,7 +3,7 @@
 # ===============================
 
 # 🔑 Khóa API của Gemini
-GEMINI_API_KEY = "AIzaSyBjXXWT-4tnTYsNYKMilGigdyh2DxqlMb8"  
+GEMINI_API_KEY = "AIzaSyDi1EaptPNGYtPfwoBFerlp6Xvg_sr2C8U"  
 
 # 🧠 Model được sử dụng
 MODEL = "gemini-2.5-flash"
@@ -18,3 +18,4 @@ PRODUCT_FILE = "./data/products.csv"
 # ⚙️ Các thiết lập mở rộng (có thể thêm sau)
 RESPONSE_STYLE = "Tôi - Quý khách"
 LANGUAGE = "vi"
+
