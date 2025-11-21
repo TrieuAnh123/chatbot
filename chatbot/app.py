@@ -55,16 +55,18 @@ with col2:
                 else:
                     st.markdown(f"🤖 **Tôi:** {chat['content']}")
 
-    # Ô nhập tin nhắn người dùng
+   # --- Form nhập tin nhắn  ---
+with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Nhập tin nhắn của bạn:")
+    send = st.form_submit_button("📨 Gửi")
 
-    if st.button("📨 Gửi") and user_input.strip():
-        st.session_state.chat_history.append({"role": "user", "content": user_input})
+if send and user_input.strip():
+    st.session_state.chat_history.append({"role": "user", "content": user_input})
 
-        bot_reply = generate_ai_response(user_input, st.session_state.chat_history)
-        st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
+    bot_reply = generate_ai_response(user_input, st.session_state.chat_history)
+    st.session_state.chat_history.append({"role": "assistant", "content": bot_reply})
 
-        st.rerun()  # ✅ Sửa lại: thay experimental_rerun() bằng rerun()
+    st.rerun()
 
 # --- Cột 3: Form tạo đơn hàng ---
 with col3:
